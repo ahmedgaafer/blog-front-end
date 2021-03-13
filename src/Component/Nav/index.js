@@ -205,7 +205,7 @@ export default function Nav() {
                 <Toolbar>
                     <NavLink className={multiClass(classes.links, classes.logo)} to="/">
                         <img 
-                            src="../../logo.svg" 
+                            src="logo.svg" 
                             className={classes.logoSize}
                             alt="logo"
                         />
