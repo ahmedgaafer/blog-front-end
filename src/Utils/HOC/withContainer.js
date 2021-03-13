@@ -1,8 +1,7 @@
 /* eslint-disable no-useless-constructor */
-import React, { Component } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import React from 'react';
 import Container from '@material-ui/core/Container';
-import { fade, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
     colors: {
@@ -14,14 +13,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function withContainer( WrappedComponent ){
-    return function(){
+    return function(props){
 
             const classes = useStyles();
             return (
                 <React.Fragment className={classes.colors}>
                     
                     <Container className={classes.colors}>
-                        <WrappedComponent />
+                        <WrappedComponent {...props} />
                     </Container>
                 </React.Fragment>
                 )
