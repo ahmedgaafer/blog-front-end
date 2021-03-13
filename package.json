@@ -19,7 +19,7 @@
     "redux": "^4.0.5",
     "web-vitals": "^1.1.0"
   },
-  "homepage": "https://ahmedgaafer.github.io/blog-front-end"
+  "homepage": "https://ahmedgaafer.github.io/blog-front-end",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
