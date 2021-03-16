@@ -17,9 +17,8 @@ export default function withContainer( WrappedComponent ){
 
             const classes = useStyles();
             return (
-                <React.Fragment className={classes.colors}>
-                    
-                    <Container className={classes.colors}>
+                <React.Fragment>
+                    <Container className={classes.colors} fixed>
                         <WrappedComponent {...props} />
                     </Container>
                 </React.Fragment>
