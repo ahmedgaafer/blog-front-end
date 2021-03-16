@@ -1,7 +1,7 @@
 import { login } from "./Auth";
 
 const API = {
-    login,
+  login,
 };
 
 export default API;
