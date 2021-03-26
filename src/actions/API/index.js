@@ -1,7 +1,11 @@
-import { login } from "./Auth";
+import Auth from "./Auth";
+import Post from "./Post";
+import Comments from "./Comments";
 
 const API = {
-  login,
+  Auth,
+  Post,
+  Comments,
 };
 
 export default API;

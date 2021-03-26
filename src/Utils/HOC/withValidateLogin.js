@@ -2,7 +2,7 @@
 import React from "react";
 import { Redirect } from "react-router";
 
-export default function withContainer(WrappedComponent) {
+export default function withValidateLogin(WrappedComponent) {
   return function (props) {
     return (
       <React.Fragment>

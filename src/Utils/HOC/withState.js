@@ -3,8 +3,11 @@ import { connect } from "react-redux";
 
 export default function withState(WrappedComponent) {
   function mapStateToProps(reduxState) {
-    const state = reduxState.authReducer;
-
+    let state = {};
+    for(let [k, v] of Object.entries(reduxState)) {
+      state = {...state, ...v}
+    }
+    
     return {
       ...state,
     };

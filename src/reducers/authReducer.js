@@ -8,19 +8,29 @@ let initialState = {
   isLogged: false,
 };
 
+function setLocalStorage({token, id, profileImageUrl, username}) {
+ 
+  localStorage.setItem("userToken", token);
+  localStorage.setItem("userID", id);
+  localStorage.setItem("userImageUrl", profileImageUrl);
+  localStorage.setItem("username", username);
+}
+
 export default function authReducer(state = initialState, action) {
   let newState = { ...state };
   switch (action.type) {
     case CREATE_NEW_USER:
+
+      setLocalStorage(action.user)
       return {
         ...newState,
+        ...action.user,
+        isLogged: true,
       };
     case LOGIN:
       if (action.code === 200) {
-        localStorage.setItem("userToken", action.user.token);
-        localStorage.setItem("userID", action.user.id);
-        localStorage.setItem("userImageUrl", action.user.profileImageUrl);
-        localStorage.setItem("username", action.user.username);
+        
+        setLocalStorage(action.user)
         return {
           ...newState,
           ...action.user,

@@ -1,17 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import withContainer from "../../Utils/HOC/withContainer";
 import withState from "../../Utils/HOC/withState";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import ExitToAppTwoToneIcon from "@material-ui/icons/ExitToAppTwoTone";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
-import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import API from "../../actions/API/index";
 function TabPanel(props) {
@@ -27,7 +26,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <div>{children}</div>
         </Box>
       )}
     </div>
@@ -47,7 +46,7 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     margin: "-15px",
     [theme.breakpoints.down("sm")]: {
@@ -68,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#4ecca3",
     borderRadius: "5px",
     marginBottom: "5px",
+    width: "100%",
   },
   inputGroup: {
     display: "flex",
@@ -85,36 +85,126 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignIn = (props) => {
+const SignIn = props => {
   const classes = useStyles();
-  function handleClick() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    API.login({ email, password })(props.dispatch);
+  const [state, setState] = useState({email:'', password:''});
+
+  function handleChange(e){
+    setState({
+      ...state,
+      [e.target.name]:e.target.value
+    })
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    API.login(state)(props.dispatch);
   }
   return (
-    <div className={classes.inputGroup}>
-      <TextField
+    <ValidatorForm
+      className={classes.inputGroup}
+      onSubmit={handleSubmit}
+      >
+      <TextValidator
         type="email"
         className={classes.btnColor}
+        onChange={handleChange}
+        value={state.email}
+        name="email"
         id="email"
-        label="E-mail"
         variant="filled"
+        label="E-mail"
+        autoComplete="username"
+        validators={['required', 'isEmail']}
+        errorMessages={['this field is required', 'email is not valid']}
       />
-      <TextField
+      <TextValidator
         type="password"
         className={classes.btnColor}
+        onChange={handleChange}
+        value={state.password}
+        name="password"
         id="password"
         label="Password"
         variant="filled"
+        autoComplete="current-password"
+        validators={['minStringLength:4', 'maxStringLength:10']}
+        errorMessages={['Password must contain 4 - 10 characters', 'Password must contain 4 - 10 characters']}
       />
-      <Button className={classes.submit} onClick={handleClick}>
-        {" "}
-        Login{" "}
+      <Button type="submit" className={classes.submit}>
+        Login
       </Button>
-    </div>
+    </ValidatorForm>
   );
 };
+
+const SignUp = props => {
+  const classes = useStyles();
+  const [state, setState] = useState({email:'', password:'', username:''});
+
+  function handleChange(e){
+    setState({
+      ...state,
+      [e.target.name]:e.target.value
+    })
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    
+    API.register(state)(props.dispatch);
+  }
+  return (
+    <ValidatorForm
+      className={classes.inputGroup}
+      onSubmit={handleSubmit}
+      >
+      <TextValidator
+        type="text"
+        className={classes.btnColor}
+        onChange={handleChange}
+        value={state.username}
+        name="username"
+        id="username"
+        label="Username"
+        variant="filled"
+        validators={["matchRegexp:^(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$","minStringLength:8", "maxStringLength:20"]}
+        errorMessages={
+          [  `Can only contain alphanumeric characters, _ , . and not start or end with ( _ or . )`,
+              "Must contain 8 - 20 characters",
+              "Must contain 8 - 20 characters"
+        ]}
+      />
+      <TextValidator
+        type="email"
+        className={classes.btnColor}
+        onChange={handleChange}
+        value={state.email}
+        name="email"
+        id="email"
+        label="E-mail"
+        variant="filled"
+        autoComplete="username"
+        validators={['required', 'isEmail']}
+        errorMessages={['this field is required', 'email is not valid']}
+      />
+      <TextValidator
+        type="password"
+        className={classes.btnColor}
+        onChange={handleChange}
+        value={state.password}
+        name="password"
+        id="password"
+        label="Password"
+        variant="filled"
+        autoComplete="current-password"
+        validators={['minStringLength:4', 'maxStringLength:10']}
+        errorMessages={['Password must contain 4 - 10 characters', 'Password must contain 4 - 10 characters']}
+      />
+      <Button type="submit" className={classes.submit} onClick={handleSubmit}>
+        Login
+      </Button>
+    </ValidatorForm>
+  );
+}
 
 export default withState(
   withContainer(function Login(props) {
@@ -160,7 +250,9 @@ export default withState(
             dir={theme.direction}
             className={classes.tabColor}
           >
-            <SignIn {...props} />
+            <div>
+              <SignIn {...props} /> 
+            </div>
           </TabPanel>
           <TabPanel
             value={value}
@@ -168,7 +260,8 @@ export default withState(
             dir={theme.direction}
             className={classes.tabColor}
           >
-            Register
+            <SignUp {...props}/>
+
           </TabPanel>
         </SwipeableViews>
       </div>

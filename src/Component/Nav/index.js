@@ -6,13 +6,9 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
-import Badge from "@material-ui/core/Badge";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import SearchIcon from "@material-ui/icons/Search";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import MailIcon from "@material-ui/icons/Mail";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Avatar from "@material-ui/core/Avatar";
 import MoreIcon from "@material-ui/icons/MoreVert";
@@ -125,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
 const multiClass = (...args) => [...args].join(" ");
 
 export default withState(function Nav(props) {
-  //#region somecode
+  //#region state and handleEvents
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -148,7 +144,28 @@ export default withState(function Nav(props) {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-
+    
+  const menuItem = closeFn => (
+    <div>
+      <NavLink
+          exact
+          className={classes.links}
+          activeClassName={classes.active}
+          to="/"
+        >
+          <MenuItem onClick={closeFn}>My account</MenuItem>
+        </NavLink>
+        <NavLink
+          exact
+          className={classes.links}
+          activeClassName={classes.active}
+          to="/page2"
+        >
+          <MenuItem onClick={closeFn}>Profile</MenuItem>
+        </NavLink>
+    </div>
+  )
+  //#region responsive views
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -161,25 +178,9 @@ export default withState(function Nav(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <NavLink
-        exact
-        className={classes.links}
-        activeClassName={classes.active}
-        to="/"
-      >
-        <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      </NavLink>
-      <NavLink
-        exact
-        className={classes.links}
-        activeClassName={classes.active}
-        to="/page2"
-      >
-        <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      </NavLink>
+      {menuItem(handleMenuClose)}
     </Menu>
   );
-
   const mobileMenuId = "primary-search-account-menu-mobile";
   const renderMobileMenu = (
     <Menu
@@ -192,35 +193,11 @@ export default withState(function Nav(props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+      
+      {menuItem(handleMobileMenuClose)}
     </Menu>
   );
+  //#endregion
   //#endregion
 
   return (
@@ -283,7 +260,7 @@ export default withState(function Nav(props) {
           ) : (
             <div>
               <div className={classes.left}>
-                <NavLink className={classes.links} to="/blog-front-end/user">
+                <NavLink className={classes.links} to="/user">
                   <IconButton
                     edge="end"
                     aria-label="Login/ Register"
