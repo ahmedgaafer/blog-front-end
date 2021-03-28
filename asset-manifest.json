@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/blog-front-end/static/css/main.5a557383.chunk.css",
-    "main.js": "/blog-front-end/static/js/main.51b0971b.chunk.js",
-    "main.js.map": "/blog-front-end/static/js/main.51b0971b.chunk.js.map",
+    "main.css": "/blog-front-end/static/css/main.ade24355.chunk.css",
+    "main.js": "/blog-front-end/static/js/main.39533e4a.chunk.js",
+    "main.js.map": "/blog-front-end/static/js/main.39533e4a.chunk.js.map",
     "runtime-main.js": "/blog-front-end/static/js/runtime-main.5ee14661.js",
     "runtime-main.js.map": "/blog-front-end/static/js/runtime-main.5ee14661.js.map",
-    "static/js/2.ab5da4d3.chunk.js": "/blog-front-end/static/js/2.ab5da4d3.chunk.js",
-    "static/js/2.ab5da4d3.chunk.js.map": "/blog-front-end/static/js/2.ab5da4d3.chunk.js.map",
+    "static/js/2.1199fd99.chunk.js": "/blog-front-end/static/js/2.1199fd99.chunk.js",
+    "static/js/2.1199fd99.chunk.js.map": "/blog-front-end/static/js/2.1199fd99.chunk.js.map",
     "index.html": "/blog-front-end/index.html",
-    "static/css/main.5a557383.chunk.css.map": "/blog-front-end/static/css/main.5a557383.chunk.css.map",
-    "static/js/2.ab5da4d3.chunk.js.LICENSE.txt": "/blog-front-end/static/js/2.ab5da4d3.chunk.js.LICENSE.txt"
+    "static/css/main.ade24355.chunk.css.map": "/blog-front-end/static/css/main.ade24355.chunk.css.map",
+    "static/js/2.1199fd99.chunk.js.LICENSE.txt": "/blog-front-end/static/js/2.1199fd99.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.5ee14661.js",
-    "static/js/2.ab5da4d3.chunk.js",
-    "static/css/main.5a557383.chunk.css",
-    "static/js/main.51b0971b.chunk.js"
+    "static/js/2.1199fd99.chunk.js",
+    "static/css/main.ade24355.chunk.css",
+    "static/js/main.39533e4a.chunk.js"
   ]
 }
