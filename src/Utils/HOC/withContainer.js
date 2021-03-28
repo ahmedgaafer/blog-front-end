@@ -7,9 +7,10 @@ const useStyles = makeStyles((theme) => ({
   colors: {
     backgroundColor: "#393e46",
     color: "#eee",
-    marginTop: "1vh",
+    marginTop: "2vw",
     padding: "1vw",
     borderRadius: "5px",
+    
   },
 }));
 

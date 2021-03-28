@@ -1,4 +1,4 @@
-import { GET_ALL_POSTS } from "../actions"
+import { GET_ALL_POSTS, CREATE_NEW_POST } from "../actions"
 
 const initialState = {
     posts: []
@@ -14,6 +14,12 @@ export default function postReducer(state = initialState, action) {
             return {
                 ...newState,
                 posts: [...action.posts],
+            }
+        case CREATE_NEW_POST:
+            const posts = [...newState.posts, action.post]
+            return {
+                ...newState,
+                posts
             }
         default:
             return {

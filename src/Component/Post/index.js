@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import withContainer from "../../Utils/HOC/withContainer";
-import Button from "@material-ui/core/Button";
+import withState from "../../Utils/HOC/withState";
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from "@material-ui/core/styles";
 import { NavLink } from "react-router-dom";
@@ -11,13 +11,15 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
+import API from "../../actions/API";
+
 
 const useStyle = makeStyles(theme => ({
     root:{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        alignContent: "center"
+        alignContent: "center",
     },
     link:{
         textDecoration: "none",
@@ -73,15 +75,18 @@ const useStyle = makeStyles(theme => ({
     }
 }))
 
-export default withContainer(function Post ({username, profileImageUrl, postID, postContent}){
+export default withState(withContainer(function Post ({username, profileImageUrl, postID, postContent, dispatch}){
     const classes = useStyle();
-    const [state, setState] = useState(false);
-
+    const [state, setState] = useState(true);
     function handleCommentEvent(e){
-        
+        if(state){
+            API.Comments.getAllPostComments(postID)(dispatch)
+            setState(!state);
+        }
+        else{
+            setState(!state);
+        }
     }
-
-    
     return (
         <div className={classes.root}> 
             <div className={classes.header}>
@@ -100,12 +105,12 @@ export default withContainer(function Post ({username, profileImageUrl, postID, 
                 <Typography >Comments</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Typography>
-                        some words
-                    </Typography>
+                    <div>
+                        <Comment postID={postID}/>
+                    </div>
                 </AccordionDetails>
                 </Accordion>
             </div>
         </div>
     )
-})
+}))

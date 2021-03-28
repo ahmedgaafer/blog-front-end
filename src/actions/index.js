@@ -21,7 +21,8 @@ export function userRegister(user) {
 
 
 //#region Posts
-export const GET_ALL_POSTS = "GET_ALL_POSTS"
+export const GET_ALL_POSTS = "GET_ALL_POSTS";
+export const CREATE_NEW_POST = "CREATE_NEW_POST";
 
 export function getAllPosts(posts){
   return {
@@ -29,6 +30,14 @@ export function getAllPosts(posts){
     posts
   }
 }
+
+export function createNewPost(post){
+  return {
+    type: CREATE_NEW_POST,
+    post
+  }
+}
+
 //#endregion
 
 //#region Comments

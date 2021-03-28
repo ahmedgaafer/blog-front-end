@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 
 export default function withState(WrappedComponent) {
   function mapStateToProps(reduxState) {
     let state = {};
-    for(let [k, v] of Object.entries(reduxState)) {
-      state = {...state, ...v}
+    for(let t of Object.entries(reduxState)) {
+      state = {...state, ...t[1]}
     }
     
     return {
@@ -17,6 +17,8 @@ export default function withState(WrappedComponent) {
     mapStateToProps,
     null
   )(function (props) {
+
+    useEffect(() => {}, [props.posts, props.comments])
     return (
       <React.Fragment>
         <WrappedComponent {...props} />
