@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import withContainer from "../../Utils/HOC/withContainer";
-import withState from "../../Utils/HOC/withState";
+import { Container } from "../Container";
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
@@ -13,6 +12,7 @@ import ExitToAppTwoToneIcon from "@material-ui/icons/ExitToAppTwoTone";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import Button from "@material-ui/core/Button";
 import API from "../../actions/API/index";
+import { useDispatch } from "react-redux";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -48,7 +48,8 @@ function a11yProps(index) {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    margin: "-15px",
+    margin: "0 auto",
+    marginTop: "30px",
     [theme.breakpoints.down("sm")]: {
       margin: "-1px",
     },
@@ -85,7 +86,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SignIn = props => {
+const SignIn = ({dispatch}) => {
   const classes = useStyles();
   const [state, setState] = useState({email:'', password:''});
 
@@ -95,9 +96,11 @@ const SignIn = props => {
       [e.target.name]:e.target.value
     })
   }
+  
   function handleSubmit(e) {
     e.preventDefault();
-    API.login(state)(props.dispatch);
+    API.Auth.login(state)(dispatch);
+
   }
   return (
     <ValidatorForm
@@ -137,7 +140,7 @@ const SignIn = props => {
   );
 };
 
-const SignUp = props => {
+const SignUp = ({dispatch}) => {
   const classes = useStyles();
   const [state, setState] = useState({email:'', password:'', username:''});
 
@@ -150,7 +153,7 @@ const SignUp = props => {
   function handleSubmit(e) {
     e.preventDefault();
     
-    API.register(state)(props.dispatch);
+    API.register(state)(dispatch);
   }
   return (
     <ValidatorForm
@@ -206,21 +209,20 @@ const SignUp = props => {
   );
 }
 
-export default withState(
-  withContainer(function Login(props) {
+export default function Login() {
     const classes = useStyles();
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-
+    const dispatch = useDispatch();
     const handleChange = (event, newValue) => {
       setValue(newValue);
     };
-
+    
     const handleChangeIndex = (index) => {
       setValue(index);
     };
     return (
-      <div className={classes.root}>
+      <Container className={classes.root}>
         <AppBar position="static">
           <Tabs
             value={value}
@@ -251,7 +253,7 @@ export default withState(
             className={classes.tabColor}
           >
             <div>
-              <SignIn {...props} /> 
+              <SignIn dispatch={dispatch} /> 
             </div>
           </TabPanel>
           <TabPanel
@@ -260,11 +262,10 @@ export default withState(
             dir={theme.direction}
             className={classes.tabColor}
           >
-            <SignUp {...props}/>
+            <SignUp dispatch={dispatch}/>
 
           </TabPanel>
         </SwipeableViews>
-      </div>
+      </Container>
     );
-  })
-);
+  };

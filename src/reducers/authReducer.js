@@ -1,4 +1,4 @@
-import { CREATE_NEW_USER, LOGIN, REMOVE_USER } from "../actions";
+import { CREATE_NEW_USER, LOGIN, LOGOUT, REMOVE_USER } from "../actions";
 
 let initialState = {
   id: "",
@@ -17,7 +17,7 @@ function setLocalStorage({token, id, profileImageUrl, username}) {
 }
 
 export default function authReducer(state = initialState, action) {
-  let newState = { ...state };
+  let newState = state;
   switch (action.type) {
     case CREATE_NEW_USER:
 
@@ -41,6 +41,9 @@ export default function authReducer(state = initialState, action) {
           ...newState,
         };
       }
+    case LOGOUT:
+      localStorage.clear();
+      return {};
     case REMOVE_USER:
       return {
         ...newState,

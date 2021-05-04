@@ -1,7 +1,7 @@
-import { GET_ALL_POST_COMMENTS } from "../actions"
+import { GET_ALL_POST_COMMENTS, CREATE_NEW_COMMENT } from "../actions"
 
 const initialState = {
-   comments: {}
+    comments: []
 }
 
 export default function postReducer(state = initialState, action) {
@@ -13,11 +13,15 @@ export default function postReducer(state = initialState, action) {
         case GET_ALL_POST_COMMENTS:
             return {
                 ...newState,
-                comments: {...newState.comments, ...action.comments},
+                comments: [...newState.comments, ...action.comments],
             }
-        default:
+        case CREATE_NEW_COMMENT:
+            const newComments = [ ...newState.comments, ...action.comment]
             return {
                 ...newState,
+                comments: newComments,
             }
+        default:
+            return newState;
     }
 }

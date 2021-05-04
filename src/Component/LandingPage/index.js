@@ -1,5 +1,4 @@
 import React from "react";
-import withState from "../../Utils/HOC/withState";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavLink } from "react-router-dom";
@@ -53,7 +52,7 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-export default  withState(function LandingPage(props){
+export default  function LandingPage(){
     const classes = useStyle();
     return (
         <div className={classes.root}>
@@ -68,4 +67,4 @@ export default  withState(function LandingPage(props){
             </div>
         </div>
     )
-})
+}

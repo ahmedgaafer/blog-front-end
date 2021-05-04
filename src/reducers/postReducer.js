@@ -1,29 +1,42 @@
-import { GET_ALL_POSTS, CREATE_NEW_POST } from "../actions"
+import _ from "lodash"
+import { SET_POSTS, CREATE_NEW_POST, DELETE_USER_POST, UPDATE_USER_POST } from "../actions"
 
 const initialState = {
     posts: []
 }
 
 export default function postReducer(state = initialState, action) {
-
-    
-    let newState = {...state}
-    
+    let newPosts = [];
     switch(action.type){
-        case GET_ALL_POSTS:
+        case SET_POSTS:
             return {
-                ...newState,
-                posts: [...action.posts],
+                ...state,
+                posts: action.posts,
             }
         case CREATE_NEW_POST:
-            const posts = [...newState.posts, action.post]
+            const posts = [action.post, ...state.posts]
             return {
-                ...newState,
+                ...state,
                 posts
             }
-        default:
+        case DELETE_USER_POST:
+            newPosts = [...state.posts]
+            _.remove(newPosts, post => post._id === action.id);
+            
             return {
-                ...newState,
+                ...state,
+                posts: newPosts,
             }
+        case UPDATE_USER_POST:
+            newPosts = [...state.posts];
+            newPosts[action.payload.index].text = action.payload.text
+
+            return {
+                ...state,
+                posts: newPosts,
+            };        
+
+        default:
+            return state;        
     }
 }

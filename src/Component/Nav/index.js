@@ -13,7 +13,9 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Avatar from "@material-ui/core/Avatar";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Switcher from "./Switch";
-import withState from "../../Utils/HOC/withState";
+import { useDispatch, useSelector } from "react-redux";
+import clsx from "clsx";
+import { userLogout } from "../../actions"
 
 const useStyles = makeStyles((theme) => ({
   colors: {
@@ -118,11 +120,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const multiClass = (...args) => [...args].join(" ");
 
-export default withState(function Nav(props) {
+export default function Nav() {
   //#region state and handleEvents
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -144,8 +146,15 @@ export default withState(function Nav(props) {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
-    
-  const menuItem = closeFn => (
+
+  const logOut = () =>{
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    dispatch(userLogout());
+  }
+
+  const menuItem = (closeFn, logoutFn) => (
+
     <div>
       <NavLink
           exact
@@ -163,6 +172,7 @@ export default withState(function Nav(props) {
         >
           <MenuItem onClick={closeFn}>Profile</MenuItem>
         </NavLink>
+        <MenuItem onClick={logoutFn}>Logout</MenuItem>
     </div>
   )
   //#region responsive views
@@ -178,7 +188,7 @@ export default withState(function Nav(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {menuItem(handleMenuClose)}
+      {menuItem(handleMenuClose, logOut)}
     </Menu>
   );
   const mobileMenuId = "primary-search-account-menu-mobile";
@@ -194,26 +204,28 @@ export default withState(function Nav(props) {
       onClose={handleMobileMenuClose}
     >
       
-      {menuItem(handleMobileMenuClose)}
+      {menuItem(handleMobileMenuClose, logOut)}
     </Menu>
   );
   //#endregion
   //#endregion
+  
+  const user = useSelector(state => state.authReducer);
 
   return (
     <div className={classes.grow}>
       <AppBar
         position="static"
-        className={multiClass(classes.colors, classes.appBarRes)}
+        className={clsx(classes.colors, classes.appBarRes)}
       >
         <Toolbar>
-          <NavLink className={multiClass(classes.links, classes.logo)} to="/">
+          <NavLink className={clsx(classes.links, classes.logo)} to="/">
             <img src="logo.svg" className={classes.logoSize} alt="logo" />
             <Typography className={classes.title} variant="h6">
               ossip
             </Typography>
           </NavLink>
-          {props.isLogged ? (
+          {user.isLogged ? (
             <React.Fragment>
               <div className={classes.search}>
                 <div className={classes.searchIcon}>
@@ -239,8 +251,8 @@ export default withState(function Nav(props) {
                   color="inherit"
                 >
                   <Avatar
-                    alt={props.username}
-                    src={`https://www.gravatar.com/avatar/${props.profileImageUrl}`}
+                    alt={user.username}
+                    src={`https://www.gravatar.com/avatar/${user.profileImageUrl}`}
                   />
                 </IconButton>
               </div>
@@ -275,10 +287,9 @@ export default withState(function Nav(props) {
         </Toolbar>
       </AppBar>
       <div>
-        <Switcher {...props} />
+        <Switcher {...user} />
       </div>
       {renderMobileMenu}
       {renderMenu}
     </div>
-  );
-});
+  )};

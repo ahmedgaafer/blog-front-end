@@ -1,5 +1,5 @@
 import CONFIG from "../Config";
-import { GET_ALL_POSTS } from '../../index';
+import { getPosts } from '../../index';
 
 const URL = CONFIG.URL;
 
@@ -9,10 +9,7 @@ export default function getAllPosts(...args){
         await fetch(`${URL}/post`)
         .then(res=> res.json())
         .then(res =>{
-            dispatch({
-                type: GET_ALL_POSTS,
-                posts: res
-            })
+            dispatch(getPosts(res))
         })
 
     }

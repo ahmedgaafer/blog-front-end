@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-
-import withState from "../../Utils/HOC/withState";
-import withContainer from "../../Utils/HOC/withContainer";
+import { useSelector, useDispatch } from "react-redux";
+import { Container } from "../Container";
 import Post from "../Post";
 import API from "../../actions/API";
 import Divider from "@material-ui/core/Divider";
@@ -74,14 +73,15 @@ const useStyle = makeStyles((theme) => ({
     focused:{},
 }));
 
-const NewPost = withContainer(function (props) {
+const NewPost = function () {
 	const choices = [
 		"What's Up? 😎",
 		"What are you thinking 🤔",
 		"Do you want to share something... 🙄",
 	];
 	const classes = useStyle();
-
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.authReducer);
 	const [value, setValue] = React.useState("");
 	const [state] = React.useState(
 		choices[Math.floor(Math.random() * choices.length)]
@@ -93,13 +93,14 @@ const NewPost = withContainer(function (props) {
     const handleSubmit = (event) => {
         event.preventDefault();
         const postBody = value;
-        const userID = props.id;
-        const token = props.token;
-        console.table([postBody, userID, token])
-        API.Post.createNewPost(userID, token, postBody)(props.dispatch);
+        const userID = user.id;
+        const token = user.token;
+        setValue("")
+        
+        API.Post.createNewPost(userID, token, postBody)(dispatch);
     }
 	return (
-		<div className={classes.newPost}>
+		<Container className={classes.newPost}>
 			<div>{state}</div>
 			<div>
 				<ValidatorForm  
@@ -110,8 +111,7 @@ const NewPost = withContainer(function (props) {
                             multiline
                             className={classes.input}
                             onChange={handleChange}
-                            value={value}
-                            
+                            value={value}   
                             InputLabelProps={{
                                 classes:{
                                     root:classes.fieldColors,
@@ -147,24 +147,29 @@ const NewPost = withContainer(function (props) {
                     </div>
 				</ValidatorForm>
 			</div>
-		</div>
+		</Container>
 	);
-});
+};
 
-export default withState(function TimeLine(props) {
+export default function TimeLine() {
+    const dispatch = useDispatch();
+    const posts = useSelector(state => state.postReducer.posts);
+
 	useEffect(() => {
-		API.Post.getAllPosts()(props.dispatch);
-	}, [props.dispatch]);
-
+		API.Post.getAllPosts()(dispatch);
+	}, [dispatch]);
+    
 	const classes = useStyle();
 	return (
 		<div>
-			<NewPost {...props} />
+			<NewPost  />
 
-			{props.posts.map((post) => (
+			{posts.map((post, index) => (
 				<div key={post._id} className={classes.post}>
 					<Post
+                        currentIndex={index}
 						{...post.user}
+                        dispatch={dispatch}
 						postID={post._id}
 						postContent={post.text}
 					/>
@@ -172,4 +177,4 @@ export default withState(function TimeLine(props) {
 			))}
 		</div>
 	);
-});
+};

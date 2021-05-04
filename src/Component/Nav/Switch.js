@@ -4,19 +4,22 @@ import Login from "../Login";
 import LandingPage from "../LandingPage";
 import TimeLine from "../TimeLine";
 
-const Switcher = (props) => {
+const Switcher = ({isLogged}) => {
+  
   return (
     <Switch>
       <Route exact path="/" >
-        {props.isLogged ? <Redirect to="/timeline"/> : <LandingPage/>}
+        {isLogged ? <Redirect to="/timeline"/> : <LandingPage/>}
       </Route>
       <Route path="/user">
-        {props.isLogged ? <Redirect to="/" /> : <Login />}
+        {isLogged ? <Redirect to="/" /> : <Login />}
       </Route>
       <Route path="/timeline">
-      {props.isLogged ? <TimeLine/> : <Login />}
+        {isLogged ? <TimeLine/> : <Login />}
       </Route>
-      <Route path="*" component={() => <div>404</div>} />
+      <Route path="*">
+        {isLogged ? <Redirect to="/" /> : <Login />}
+      </Route>
     </Switch>
   );
 };
