@@ -38,6 +38,9 @@ export const SET_POSTS = "SET_ALL_POSTS";
 export const CREATE_NEW_POST = "CREATE_NEW_POST";
 export const DELETE_USER_POST = "DELETE_USER_POST";
 export const UPDATE_USER_POST = "UPDATE_USER_POST";
+export const GET_NEXT_POST_BATCH = "GET_NEXT_POST_BATCH";
+export const SET_USER_POSTS = "SET_USER_POSTS";
+export const CLEAN_NUMBER_OF_LOADED_POST = "CLEAN_NUMBER_OF_LOADED_POST";
 
 export function getPosts(posts){
   return {
@@ -64,6 +67,26 @@ export function updatePost(payload){
   return{
     type: UPDATE_USER_POST,
     payload
+  }
+}
+
+export function getNextPost(offset){
+  return{
+    type: GET_NEXT_POST_BATCH,
+    offset
+  }
+}
+
+export function setUserPosts(payload){
+  return {
+    type: SET_USER_POSTS,
+    payload
+  }
+}
+
+export function cleanNumberOfLoadedPosts(){
+  return{
+    type: CLEAN_NUMBER_OF_LOADED_POST
   }
 }
 

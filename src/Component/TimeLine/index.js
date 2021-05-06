@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect }  from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Container } from "../Container";
 import Post from "../Post";
@@ -8,6 +8,9 @@ import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core/styles";
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
+import { cleanNumberOfLoadedPosts } from '../../actions'
+import _ from 'lodash';
+
 
 const useStyle = makeStyles((theme) => ({
 	root: {
@@ -72,6 +75,10 @@ const useStyle = makeStyles((theme) => ({
     },
     focused:{},
 }));
+
+Element.prototype.hasScrollBars = function() {
+    return {"vertical": this.scrollHeight > this.style.height, "horizontal": this.scrollWidth > this.style.width};
+}
 
 const NewPost = function () {
 	const choices = [
@@ -151,20 +158,56 @@ const NewPost = function () {
 	);
 };
 
-export default function TimeLine() {
+export default function TimeLine({id}) {
     const dispatch = useDispatch();
-    const posts = useSelector(state => state.postReducer.posts);
+    let mainPagePost = useSelector(state => state.postReducer.posts);
+    let profilePosts = useSelector(state => state.postReducer.profilePosts);
+    const posts = (!id)? mainPagePost : profilePosts;
+    let loaded = useSelector(state => state.postReducer.loaded);
+    const TIMEOUT = 1000;
 
-	useEffect(() => {
-		API.Post.getAllPosts()(dispatch);
-	}, [dispatch]);
+
+    useEffect(()=> {
+        if(loaded === 0){
+            if(id){
+                API.Post.getUserPosts(loaded, id)(dispatch)
+            }
+            else{
+                API.Post.getAllPosts(loaded)(dispatch);
+            }
+        }
     
+        if(loaded > 5){
+            if(loaded % 5 === 0) window.scrollTo(0, document.body.scrollHeight * 0.6)
+            
+        }
+
+
+        window.addEventListener('scroll',  _.throttle(e => {
+            const bottomLimit = document.documentElement.offsetHeight - window.innerHeight;
+            if(document.documentElement.scrollTop === bottomLimit){
+                if(id){
+
+                    API.Post.getUserPosts(loaded, id)(dispatch)
+                }
+                else{
+                    API.Post.getAllPosts(loaded)(dispatch);
+                }
+            }
+        }, TIMEOUT))
+
+    }, [loaded, dispatch, id])
+
+    useEffect(() => {
+
+        dispatch(cleanNumberOfLoadedPosts())
+    }, [dispatch]);
 	const classes = useStyle();
 	return (
 		<div>
-			<NewPost  />
+			{(!id)?<NewPost  /> : false}
 
-			{posts.map((post, index) => (
+			{(posts && posts.length > 0)?posts.map((post, index) => (
 				<div key={post._id} className={classes.post}>
 					<Post
                         currentIndex={index}
@@ -174,7 +217,7 @@ export default function TimeLine() {
 						postContent={post.text}
 					/>
 				</div>
-			))}
+			)): false}
 		</div>
 	);
 };

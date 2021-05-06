@@ -129,6 +129,7 @@ export default function Nav() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const userID = useSelector(state => state.authReducer.id);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -160,15 +161,18 @@ export default function Nav() {
           exact
           className={classes.links}
           activeClassName={classes.active}
-          to="/"
+          to="/timeline"
         >
-          <MenuItem onClick={closeFn}>My account</MenuItem>
+          <MenuItem onClick={closeFn}>Timeline</MenuItem>
         </NavLink>
         <NavLink
           exact
           className={classes.links}
           activeClassName={classes.active}
-          to="/page2"
+          to={{
+            pathname:"/profile",
+            state:{id: userID}
+          }}
         >
           <MenuItem onClick={closeFn}>Profile</MenuItem>
         </NavLink>

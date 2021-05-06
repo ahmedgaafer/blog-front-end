@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import SendRoundedIcon from "@material-ui/icons/SendRounded";
 import IconButton from "@material-ui/core/IconButton";
-import { Container } from "../Container";
 import API from "../../actions/API";
 
 

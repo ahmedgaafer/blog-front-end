@@ -221,7 +221,10 @@ export default function Post({
 					className={classes.profileImage}
 					src={`https://www.gravatar.com/avatar/${profileImageUrl}`}
 				></Avatar>{" "}
-				<NavLink to="/" className={classes.link}>
+				<NavLink to={{
+					pathname:"/profile",
+					state:{id:_id}
+				}} className={classes.link}>
 					{_.startCase(_.toLower(username))}
 				</NavLink>
                 {

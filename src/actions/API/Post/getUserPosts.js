@@ -1,12 +1,12 @@
 import CONFIG from "../Config";
-import { getPosts } from '../../index';
+import { setUserPosts } from '../../index';
 
 const URL = CONFIG.URL;
 
-export default function getAllPosts(skip){
+export default function getUserPosts(skip, userID){
     return async function(dispatch){
         
-        await fetch(`${URL}/post`,{
+        await fetch(`${URL}/post/user/${userID}`,{
             method: "POST",
             headers: {
                 "Content-Type":"application/json",
@@ -15,7 +15,7 @@ export default function getAllPosts(skip){
         })
         .then(res=> res.json())
         .then(res =>{
-            dispatch(getPosts(res))
+            dispatch(setUserPosts({posts:res, userID}))
         })
 
     }

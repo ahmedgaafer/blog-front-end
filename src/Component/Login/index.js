@@ -153,7 +153,7 @@ const SignUp = ({dispatch}) => {
   function handleSubmit(e) {
     e.preventDefault();
     
-    API.register(state)(dispatch);
+    API.Auth.register(state)(dispatch);
   }
   return (
     <ValidatorForm
@@ -203,7 +203,7 @@ const SignUp = ({dispatch}) => {
         errorMessages={['Password must contain 4 - 10 characters', 'Password must contain 4 - 10 characters']}
       />
       <Button type="submit" className={classes.submit} onClick={handleSubmit}>
-        Login
+        Register
       </Button>
     </ValidatorForm>
   );
