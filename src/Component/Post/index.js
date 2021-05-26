@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import { makeStyles } from "@material-ui/core/styles";
 import { NavLink } from "react-router-dom";
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Dialog from "@material-ui/core/Dialog";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from "@material-ui/core/IconButton";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -21,6 +21,7 @@ import Comment from "../Comment";
 import _ from "lodash";
 import API from "../../actions/API";
 import { TextField } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 
 const useStyle = makeStyles((theme) => ({
 	root: {
@@ -39,21 +40,21 @@ const useStyle = makeStyles((theme) => ({
 			fontWeight: 500,
 		},
 	},
-    colors: {
-        backgroundColor: "#393e46",
-        color: "#eee",
-    },
+	colors: {
+		backgroundColor: "#393e46",
+		color: "#eee",
+	},
 	header: {
 		display: "flex",
 		flexDirection: "row",
 		alignContent: "center",
 		marginBottom: "10px",
 	},
-    ownerMenu:{
-        display: "flex",
-        justifyContent: "flex-end",
-        width:"100%",
-    },
+	ownerMenu: {
+		display: "flex",
+		justifyContent: "flex-end",
+		width: "100%",
+	},
 	profileImage: {
 		animation: `$shrink 1000ms ${theme.transitions.easing.easeInOut} both`,
 		"&:hover": {
@@ -90,15 +91,14 @@ const useStyle = makeStyles((theme) => ({
 	},
 }));
 
+function PostOwner({ postID, userID, dispatch, currentIndex }) {
+	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [open, setOpen] = React.useState(false);
+	const [openEdit, setOpenEdit] = React.useState(false);
+	const [postBody, setPostBody] = React.useState("");
 
-function PostOwner({postID, userID, dispatch, currentIndex}){
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [open, setOpen] = React.useState(false);
-    const [openEdit, setOpenEdit] = React.useState(false);
-	const [postBody, setPostBody] = React.useState('');
-
-    const classes = useStyle();
-	const Token = localStorage.getItem('userToken');
+	const classes = useStyle();
+	const Token = localStorage.getItem("userToken");
 
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -108,86 +108,114 @@ function PostOwner({postID, userID, dispatch, currentIndex}){
 		setAnchorEl(null);
 	};
 
-    const handleClickOpen = () => {
-        setOpen(true);
-        setAnchorEl(null);
-    };
+	const handleClickOpen = () => {
+		setOpen(true);
+		setAnchorEl(null);
+	};
 
-    const handleConfirmClose = (value) => {
-        setOpen(false);
+	const handleConfirmClose = (value) => {
+		setOpen(false);
 
-		if(value === 'Yes'){
-		
+		if (value === "Yes") {
 			API.Post.deleteUserPost(postID, userID, Token)(dispatch);
 		}
-    
-    };
-
+	};
 
 	const handleEditOpen = () => {
 		setOpenEdit(true);
 		setAnchorEl(null);
-	}
+	};
 
 	const handleEditChange = (e) => {
-		setPostBody(e.target.value)
-	}
+		setPostBody(e.target.value);
+	};
 
 	const handleConfirmCloseEdit = (value) => {
 		setOpenEdit(false);
 		API.Post.editPost(value, postID, userID, Token)(dispatch, currentIndex);
-	}
+	};
 
-    return(
-        <div className={classes.ownerMenu}>
-            <IconButton
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
+	return (
+		<div className={classes.ownerMenu}>
+			<IconButton
+				aria-label="more"
+				aria-controls="long-menu"
+				aria-haspopup="true"
+				onClick={handleClick}
+			>
+				<MoreVertIcon style={{ color: "white" }} />
+			</IconButton>
 
-            >
-                <MoreVertIcon style={{color: 'white'}}/>
-            </IconButton>
+			<Menu
+				classes={{ paper: classes.colors }}
+				id="simple-menu"
+				anchorEl={anchorEl}
+				keepMounted
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+				transformOrigin={{ vertical: "top", horizontal: "right" }}
+			>
+				<MenuItem onClick={handleEditOpen}>Edit</MenuItem>
+				<MenuItem style={{ color: "red" }} onClick={handleClickOpen}>
+					Delete
+				</MenuItem>
+			</Menu>
 
-            <Menu
-                classes={{ paper: classes.colors }}
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-                <MenuItem onClick={handleEditOpen}>Edit</MenuItem>
-                <MenuItem style={{color: "red"}} onClick={handleClickOpen}>Delete</MenuItem>
-            </Menu>
-
-			<Dialog onClose={handleConfirmCloseEdit} aria-labelledby="post-edit" open={openEdit}>
-				<DialogTitle  id="post-edit">What is the new Post Content?</DialogTitle>
-				<TextField value={postBody} onChange={handleEditChange}></TextField>
-				<List >
-					{['Confirm Edit', 'Discard changes'].map(option => {
-						return <ListItem button onClick={() => {handleConfirmCloseEdit(postBody)}} key={option}>
-									<ListItemText  primary={option}/>
-								</ListItem>
+			<Dialog
+				onClose={handleConfirmCloseEdit}
+				aria-labelledby="post-edit"
+				open={openEdit}
+			>
+				<DialogTitle id="post-edit">
+					What is the new Post Content?
+				</DialogTitle>
+				<TextField
+					value={postBody}
+					onChange={handleEditChange}
+				></TextField>
+				<List>
+					{["Confirm Edit", "Discard changes"].map((option) => {
+						return (
+							<ListItem
+								button
+								onClick={() => {
+									handleConfirmCloseEdit(postBody);
+								}}
+								key={option}
+							>
+								<ListItemText primary={option} />
+							</ListItem>
+						);
 					})}
 				</List>
 			</Dialog>
-            <Dialog onClose={handleConfirmClose} aria-labelledby="post-delete" open={open}>
-                <DialogTitle  id="post-delete">Are you sure you want to delete the post?</DialogTitle>
-                <List >
-                    {['Yes', 'No'].map(option => {
-                        return <ListItem button onClick={() => {handleConfirmClose(option)}} key={option}>
-                                    <ListItemText  primary={option}/>
-                                </ListItem>
-                    })}
-                </List>
-            </Dialog>
-        </div>
-    )
+			<Dialog
+				onClose={handleConfirmClose}
+				aria-labelledby="post-delete"
+				open={open}
+			>
+				<DialogTitle id="post-delete">
+					Are you sure you want to delete the post?
+				</DialogTitle>
+				<List>
+					{["Yes", "No"].map((option) => {
+						return (
+							<ListItem
+								button
+								onClick={() => {
+									handleConfirmClose(option);
+								}}
+								key={option}
+							>
+								<ListItemText primary={option} />
+							</ListItem>
+						);
+					})}
+				</List>
+			</Dialog>
+		</div>
+	);
 }
-
 
 export default function Post({
 	username,
@@ -195,15 +223,13 @@ export default function Post({
 	postID,
 	postContent,
 	currentIndex,
-    _id,
-	dispatch,
+	_id,
 }) {
 	const classes = useStyle();
 	const [state, setState] = useState(true);
 	const ID = _id;
-    const userID = localStorage.getItem('userID');
-    
-    
+	const userID = localStorage.getItem("userID");
+	const dispatch = useDispatch();
 	function handleCommentEvent(e) {
 		if (state) {
 			API.Comments.getAllPostComments(postID)(dispatch);
@@ -221,16 +247,24 @@ export default function Post({
 					className={classes.profileImage}
 					src={`https://www.gravatar.com/avatar/${profileImageUrl}`}
 				></Avatar>{" "}
-				<NavLink to={{
-					pathname:"/profile",
-					state:{id:_id}
-				}} className={classes.link}>
+				<NavLink
+					to={{
+						pathname: `/profile/${ID}`,
+					}}
+					className={classes.link}
+				>
 					{_.startCase(_.toLower(username))}
 				</NavLink>
-                {
-                    ID === userID? <PostOwner currentIndex={currentIndex} postID={postID} userID={userID} dispatch={dispatch}/>: false
-                }
-                
+				{ID === userID ? (
+					<PostOwner
+						currentIndex={currentIndex}
+						postID={postID}
+						userID={userID}
+						dispatch={dispatch}
+					/>
+				) : (
+					false
+				)}
 			</div>
 			<div className={classes.post}>{postContent}</div>
 			<div className={classes.comment}>
