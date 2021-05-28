@@ -155,6 +155,16 @@ const NewPost = function () {
 	);
 };
 
+const throttledReq = (loaded, dispatch, TIMEOUT) =>
+	_.throttle((e) => {
+		console.log("CALLED!");
+		const bottomLimit =
+			document.documentElement.offsetHeight - window.innerHeight;
+		if (document.documentElement.scrollTop === bottomLimit) {
+			API.Post.getAllPosts(loaded)(dispatch);
+		}
+	}, TIMEOUT);
+
 export default function TimeLine({ id }) {
 	const dispatch = useDispatch();
 	let posts = useSelector((state) => state.postReducer.posts);
@@ -171,22 +181,18 @@ export default function TimeLine({ id }) {
 				window.scrollTo(0, document.body.scrollHeight * 0.6);
 		}
 
-		window.addEventListener(
-			"scroll",
-			_.throttle((e) => {
-				// Remove event listener in "Effect clean up function"
-				const bottomLimit =
-					document.documentElement.offsetHeight - window.innerHeight;
-				if (document.documentElement.scrollTop === bottomLimit) {
-					API.Post.getAllPosts(loaded)(dispatch);
-				}
-			}, TIMEOUT)
-		);
+		const throttledEvent = throttledReq(loaded, dispatch, TIMEOUT);
+		window.addEventListener("scroll", throttledEvent);
+
+		return () => {
+			window.removeEventListener("scroll", throttledEvent);
+		};
 	}, [loaded, dispatch, id]);
 
 	useEffect(() => {
 		dispatch(cleanNumberOfLoadedPosts());
-	}, [dispatch]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<div>

@@ -59,25 +59,25 @@ export default function postReducer(state = initialState, action) {
 		}
 		case SET_USER_POSTS: {
 			let newPosts = [...state.profilePosts, ...action.payload.posts];
-			let ids = newPosts.map((o) => o._id);
+			//let ids = newPosts.map((o) => o._id);
 
-			let filtered = newPosts
-				.filter(
-					({ user, _id }, index) =>
-						user._id === action.payload.userID &&
-						!ids.includes(_id, index + 1)
-				)
-				.sort((a, b) =>
-					a.createdAt > b.createdAt
-						? -1
-						: b.createdAt > a.createdAt
-						? 1
-						: 0
-				);
+			// let filtered = newPosts
+			// 	.filter(
+			// 		({ user, _id }, index) =>
+			// 			user._id === action.payload.userID &&
+			// 			!ids.includes(_id, index + 1)
+			// 	)
+			// 	.sort((a, b) =>
+			// 		a.createdAt > b.createdAt
+			// 			? -1
+			// 			: b.createdAt > a.createdAt
+			// 			? 1
+			// 			: 0
+			// 	);
 			return {
 				...state,
-				profilePosts: filtered,
-				loaded: filtered.length,
+				profilePosts: newPosts,
+				loaded: newPosts.length,
 			};
 		}
 		case CLEAN_NUMBER_OF_LOADED_POST:

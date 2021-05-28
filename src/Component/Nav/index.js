@@ -18,6 +18,21 @@ import clsx from "clsx";
 import { userLogout } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
+	"@global": {
+		"*::-webkit-scrollbar": {
+			width: "0.2em",
+		},
+		"*::-webkit-scrollbar-track": {
+			"-webkit-box-shadow": "inset 0 0 6px rgba(0,0,0,0.0)",
+		},
+		"*::-webkit-scrollbar-thumb": {
+			backgroundColor: "#4ecca3",
+			borderRadius: "10px",
+		},
+		"*::-webkit-scrollbar-thumb:hover": {
+			backgroundColor: "#438770",
+		},
+	},
 	colors: {
 		backgroundColor: "#393e46",
 		color: "#eee",
@@ -224,7 +239,7 @@ export default function Nav() {
 						to="/"
 					>
 						<img
-							src="logo.svg"
+							src={`${process.env.PUBLIC_URL}/logo.svg`}
 							className={classes.logoSize}
 							alt="logo"
 						/>

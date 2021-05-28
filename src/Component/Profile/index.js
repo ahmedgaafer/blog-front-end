@@ -5,11 +5,13 @@ import Avatar from "@material-ui/core/Avatar";
 import { Container } from "../Container";
 import { Typography } from "@material-ui/core";
 import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
 import PostLoader from "../PostLoader";
 import API from "../../actions/API";
 import { useSelector } from "react-redux";
 import { cleanNumberOfLoadedPosts } from "../../actions";
 import _ from "lodash";
+import { useParams } from "react-router";
 
 const useStyle = makeStyles((theme) => ({
 	root: {
@@ -48,26 +50,53 @@ const useStyle = makeStyles((theme) => ({
 		flexDirection: "row",
 		justifyContent: "space-around",
 		alignContent: "center",
+		[theme.breakpoints.down("sm")]: {
+			flexDirection: "column",
+		},
 	},
 	infoDivider: {
 		height: 100,
 		width: 1,
+		[theme.breakpoints.down("sm")]: {
+			display: "none",
+		},
 	},
 	infoBlock: {
 		display: "flex",
 		flexDirection: "column",
 		justifyContent: "space-around",
 		alignItems: "center",
+		[theme.breakpoints.down("sm")]: {
+			marginTop: "40px",
+		},
 	},
 	infoTitle: {
 		fontSize: "24px",
 		letterSpacing: theme.spacing(0.5),
 		color: "#2caa81",
 	},
+	followField: {
+		margin: "60px 0",
+		minWidth: "90%",
+		display: "flex",
+		flexDirection: "row",
+		justifyContent: "space-around",
+		alignContent: "center",
+	},
+	follow: {
+		color: "#4ECCA3",
+		borderRadius: "0",
+		margin: "0 auto",
+		letterSpacing: theme.spacing(2),
+		border: "1px solid #4ECCA3",
+	},
+	filler1: { minWidth: "35%" },
+	filler2: { minWidth: "25%" },
 }));
 
-const throttledReq = (loaded, userID, dispatch, TIMEOUT) => () =>
+const throttledReq = (loaded, userID, dispatch, TIMEOUT) =>
 	_.throttle((e) => {
+		console.log("CALLED!");
 		const bottomLimit =
 			document.documentElement.offsetHeight - window.innerHeight;
 		if (document.documentElement.scrollTop === bottomLimit) {
@@ -78,9 +107,11 @@ const throttledReq = (loaded, userID, dispatch, TIMEOUT) => () =>
 export default function Profile() {
 	const classes = useStyle();
 	const dispatch = useDispatch();
-	const userID = window.location.href.split("/").pop();
-	const loaded = useSelector((store) => store.postReducer.loaded);
-	let posts = useSelector((state) => state.postReducer.profilePosts);
+	const { userID } = useParams();
+
+	const loaded = useSelector((store) => store.postReducer.loaded); // change loaded name to more understandable var name
+	let posts = useSelector((store) => store.postReducer.profilePosts);
+
 	const [user, setUser] = useState({
 		name: "none",
 		img: "none",
@@ -105,25 +136,20 @@ export default function Profile() {
 				window.scrollTo(0, document.body.scrollHeight * 0.6);
 		}
 
-		window.addEventListener(
-			"scroll",
-			_.throttle((e) => {
-				const bottomLimit =
-					document.documentElement.offsetHeight - window.innerHeight;
-				if (document.documentElement.scrollTop === bottomLimit) {
-					API.Post.getUserPosts(loaded, userID)(dispatch);
-				}
-			}, TIMEOUT)
-		);
+		const throttledEvent = throttledReq(loaded, userID, dispatch, TIMEOUT);
+
+		window.addEventListener("scroll", throttledEvent);
 
 		return function cleanup() {
-			window.removeEventListener("scroll", _.throttle);
+			window.removeEventListener("scroll", throttledEvent);
 		};
 	}, [loaded, dispatch, userID]);
 
 	useEffect(() => {
 		dispatch(cleanNumberOfLoadedPosts());
-	}, [dispatch]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [userID]);
+
 	function handleImageClick(e) {
 		window.open(e.target.src, "_blank").focus();
 	}
@@ -168,6 +194,15 @@ export default function Profile() {
 						<div className={classes.infoTitle}>Following</div>
 						<div>{user.following}</div>
 					</div>
+				</div>
+				<div className={classes.followField}>
+					<div className={classes.filler1}></div>
+					<IconButton className={classes.follow} aria-label="delete">
+						Fol
+						{/* <AddCircleIcon /> */}
+						low
+					</IconButton>
+					<div className={classes.filler2}></div>
 				</div>
 			</Container>
 			<PostLoader posts={posts} />
