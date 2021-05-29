@@ -3,9 +3,10 @@ import { getPosts } from "../../index";
 
 const URL = CONFIG.URL;
 
-export default function getAllPosts(skip) {
+export default function getAllPosts(skip, userID) {
 	return async function (dispatch) {
-		await fetch(`${URL}post?skip=${skip}`, {
+		console.log(userID);
+		await fetch(`${URL}post?skip=${skip}&f=${userID}`, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",

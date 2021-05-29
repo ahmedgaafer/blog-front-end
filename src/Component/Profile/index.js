@@ -108,9 +108,11 @@ export default function Profile() {
 	const classes = useStyle();
 	const dispatch = useDispatch();
 	const { userID } = useParams();
-
+	const sessionOwner = useSelector((store) => store.authReducer.id);
+	const token = useSelector((store) => store.authReducer.token);
 	const loaded = useSelector((store) => store.postReducer.loaded); // change loaded name to more understandable var name
 	let posts = useSelector((store) => store.postReducer.profilePosts);
+	const [following, setFollowing] = useState([]);
 
 	const [user, setUser] = useState({
 		name: "none",
@@ -125,9 +127,14 @@ export default function Profile() {
 	useEffect(() => {
 		if (loaded === 0) {
 			API.Post.getUserPosts(loaded, userID)(dispatch);
+
 			(async () => {
+				const followersList = await API.Follow.getUserFollowingList(
+					sessionOwner
+				);
 				const currentUser = await API.Auth.getUserById({ userID });
 				setUser(currentUser);
+				setFollowing(followersList);
 			})();
 		}
 
@@ -143,12 +150,37 @@ export default function Profile() {
 		return function cleanup() {
 			window.removeEventListener("scroll", throttledEvent);
 		};
-	}, [loaded, dispatch, userID]);
+	}, [loaded, dispatch, userID, sessionOwner]);
 
 	useEffect(() => {
 		dispatch(cleanNumberOfLoadedPosts());
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [userID]);
+
+	const handleunFollowClick = async () => {
+		const res = await API.Follow.unFollowUser(sessionOwner, userID, token);
+		if (res && res._id) {
+			const index = following.indexOf(userID);
+			if (index > -1) {
+				await setFollowing([...following.splice(index, 1)]);
+			}
+			setUser({
+				...user,
+				followers: user.followers - 1,
+			});
+		}
+	};
+
+	const handleFollowClick = async () => {
+		const res = await API.Follow.FollowUser(sessionOwner, userID, token);
+		if (res && res._id) {
+			setFollowing([...following, userID]);
+			setUser({
+				...user,
+				followers: user.followers + 1,
+			});
+		}
+	};
 
 	function handleImageClick(e) {
 		window.open(e.target.src, "_blank").focus();
@@ -195,15 +227,32 @@ export default function Profile() {
 						<div>{user.following}</div>
 					</div>
 				</div>
-				<div className={classes.followField}>
-					<div className={classes.filler1}></div>
-					<IconButton className={classes.follow} aria-label="delete">
-						Fol
-						{/* <AddCircleIcon /> */}
-						low
-					</IconButton>
-					<div className={classes.filler2}></div>
-				</div>
+				{(sessionOwner !== userID && !following.includes(userID)) ||
+				user.followers === 0 ? (
+					<div className={classes.followField}>
+						<div className={classes.filler1}></div>
+						<IconButton
+							className={classes.follow}
+							aria-label="delete"
+							onClick={handleFollowClick}
+						>
+							Follow
+						</IconButton>
+						<div className={classes.filler2}></div>
+					</div>
+				) : (
+					<div className={classes.followField}>
+						<div className={classes.filler1}></div>
+						<IconButton
+							className={classes.follow}
+							aria-label="delete"
+							onClick={handleunFollowClick}
+						>
+							unFollow
+						</IconButton>
+						<div className={classes.filler2}></div>
+					</div>
+				)}
 			</Container>
 			<PostLoader posts={posts} />
 		</div>

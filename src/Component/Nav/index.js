@@ -13,9 +13,14 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import Avatar from "@material-ui/core/Avatar";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Switcher from "./Switch";
+import API from "../../actions/API";
 import { useDispatch, useSelector } from "react-redux";
 import clsx from "clsx";
 import { userLogout } from "../../actions";
+import _ from "lodash";
+import Popper from "@material-ui/core/Popper";
+import SearchWindow from "../SearchWindow";
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 
 const useStyles = makeStyles((theme) => ({
 	"@global": {
@@ -135,12 +140,23 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const throttledEvent = (query, TIMEOUT) =>
+	_.throttle(async () => {
+		if (query.length > 0) {
+			return await API.Auth.userSearch(query);
+		}
+		return [];
+	}, TIMEOUT);
+
 export default function Nav() {
 	//#region state and handleEvents
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [popoverAnchor, setPopoverAnchor] = React.useState(null);
 	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+	const [search, setSearch] = React.useState("");
+	const [searchResult, setSearchResult] = React.useState(null);
 	const isMenuOpen = Boolean(anchorEl);
 	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 	const userID = useSelector((state) => state.authReducer.id);
@@ -191,6 +207,21 @@ export default function Nav() {
 			<MenuItem onClick={logoutFn}>Logout</MenuItem>
 		</div>
 	);
+	const throttledSearch = throttledEvent(search, 1000);
+
+	const handleSearchChange = async (e) => {
+		await setSearch(e.target.value);
+		const res = await throttledSearch();
+		await setSearchResult(res);
+		if (res.length !== 0) {
+			await setPopoverAnchor(e.target);
+			e.target.focus();
+		} else {
+			await setPopoverAnchor(null);
+		}
+	};
+	const popoverOpen = Boolean(popoverAnchor);
+
 	//#region responsive views
 	const menuId = "primary-search-account-menu";
 	const renderMenu = (
@@ -254,7 +285,15 @@ export default function Nav() {
 									<SearchIcon />
 								</div>
 								<InputBase
-									placeholder="Search…"
+									placeholder="Search by email..."
+									name="search"
+									value={search}
+									onChange={handleSearchChange}
+									onClick={
+										popoverOpen
+											? () => {}
+											: handleSearchChange
+									}
 									classes={{
 										root: classes.inputRoot,
 										input: classes.inputInput,
@@ -262,6 +301,18 @@ export default function Nav() {
 									inputProps={{ "aria-label": "search" }}
 								/>
 							</div>
+							<ClickAwayListener
+								onClickAway={() => setPopoverAnchor(null)}
+							>
+								<Popper
+									open={popoverOpen}
+									anchorEl={popoverAnchor}
+									onClose={() => setPopoverAnchor(null)}
+									placement="bottom-start"
+								>
+									<SearchWindow users={searchResult} />
+								</Popper>
+							</ClickAwayListener>
 							<div className={classes.grow} />
 							<div className={classes.sectionDesktop}>
 								<IconButton

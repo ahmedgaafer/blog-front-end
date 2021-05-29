@@ -274,7 +274,7 @@ export default function Comment({ postID }) {
 	return (
 		<div>
 			<NewComment postID={postID} />
-			{!comments || comments.length === 0 || _.some()
+			{!comments || comments.length === 0
 				? "There are no comments yet! be the first one to comment"
 				: comments.map((comment, i) => {
 						return (

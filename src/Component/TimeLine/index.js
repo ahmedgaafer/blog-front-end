@@ -155,13 +155,12 @@ const NewPost = function () {
 	);
 };
 
-const throttledReq = (loaded, dispatch, TIMEOUT) =>
+const throttledReq = (loaded, dispatch, TIMEOUT, sessionOwner) =>
 	_.throttle((e) => {
-		console.log("CALLED!");
 		const bottomLimit =
 			document.documentElement.offsetHeight - window.innerHeight;
 		if (document.documentElement.scrollTop === bottomLimit) {
-			API.Post.getAllPosts(loaded)(dispatch);
+			API.Post.getAllPosts(loaded, sessionOwner)(dispatch);
 		}
 	}, TIMEOUT);
 
@@ -169,11 +168,12 @@ export default function TimeLine({ id }) {
 	const dispatch = useDispatch();
 	let posts = useSelector((state) => state.postReducer.posts);
 	let loaded = useSelector((state) => state.postReducer.loaded);
+	const sessionOwner = useSelector((state) => state.authReducer.id);
 	const TIMEOUT = 1000;
 
 	useEffect(() => {
 		if (loaded === 0) {
-			API.Post.getAllPosts(loaded)(dispatch);
+			API.Post.getAllPosts(loaded, sessionOwner)(dispatch);
 		}
 
 		if (loaded > 5) {
@@ -181,13 +181,19 @@ export default function TimeLine({ id }) {
 				window.scrollTo(0, document.body.scrollHeight * 0.6);
 		}
 
-		const throttledEvent = throttledReq(loaded, dispatch, TIMEOUT);
+		const throttledEvent = throttledReq(
+			loaded,
+			dispatch,
+			TIMEOUT,
+			sessionOwner
+		);
 		window.addEventListener("scroll", throttledEvent);
 
 		return () => {
 			window.removeEventListener("scroll", throttledEvent);
 		};
-	}, [loaded, dispatch, id]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [loaded, id]);
 
 	useEffect(() => {
 		dispatch(cleanNumberOfLoadedPosts());
